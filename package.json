@@ -1,0 +1,14 @@
+{
+  "name": "vietlott-data-sync",
+  "version": "1.0.0",
+  "description": "Scheduled scraper that mirrors the latest Vietlott draw results as stable JSON files, so client apps don't have to scrape vietlott.vn themselves.",
+  "private": true,
+  "main": "src/scrape.js",
+  "scripts": {
+    "scrape": "node src/scrape.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0"
+  }
+}
