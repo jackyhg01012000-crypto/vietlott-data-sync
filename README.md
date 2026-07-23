@@ -53,20 +53,33 @@ nhưng từ runner GitHub Actions (dải IP datacenter của Azure) Cloudflare t
 mọi sản phẩm - không phải challenge page, chặn thẳng. Đây là lý do workflow `sync` fail liên
 tục dù code cào hoàn toàn đúng (chạy `npm run scrape` ở máy local vẫn 7/7 OK).
 
-Đã xử lý ở `src/fetcher.js`: gửi đủ bộ header của Chrome (`sec-fetch-*`, `sec-ch-ua`,
-`Accept` kiểu document) và ép cipher/curve theo thứ tự của Chrome để JA3 fingerprint không
-lộ ra là Node. Nếu Cloudflare chặn theo danh tiếng ASN chứ không theo fingerprint thì cách
-này không đủ.
+**Đã đo, không phải phỏng đoán.** Workflow `diagnose` thử 8 chiến lược fetch ngay trên
+runner GitHub (run 29991793601, 2026-07-23) - **0/8 qua được**:
 
-Để biết chắc cách nào qua được, chạy workflow **Diagnose Cloudflare block** thủ công
-(Actions → Diagnose Cloudflare block → Run workflow). Nó thử 8 chiến lược fetch ngay trên
-runner rồi in bảng tổng kết cái nào trả về HTML dùng được.
+| Chiến lược | Kết quả |
+|---|---|
+| baseline (header tối thiểu) | 403 challenge page |
+| bộ header Chrome đầy đủ | 403 |
+| header Chrome + JA3 fingerprint của Chrome | 403 |
+| Node native fetch (undici) | 403 |
+| header Chrome + `Referer` same-origin | 403 |
+| ép IPv4 | 403 |
+| proxy công cộng allorigins / codetabs | 522 (chính chúng cũng bị chặn) |
 
-Nếu không chiến lược nào qua, cần egress từ phía Việt Nam:
+Kết luận: Cloudflare chặn theo **danh tiếng IP/ASN**, không theo fingerprint. Không có cách
+nào sửa ở tầng code để runner GitHub đi qua được. `src/fetcher.js` vẫn giữ bộ header Chrome
++ TLS fingerprint (vô hại, có ích khi đi qua proxy), nhưng nó **không** giải quyết được vấn
+đề này.
+
+Muốn workflow chạy lại được thì bắt buộc phải có egress từ phía Việt Nam:
 
 - **Self-hosted runner** đặt ở VN - đáng tin cậy nhất, miễn phí, đổi lại máy phải bật.
+  Đổi `runs-on: ubuntu-latest` thành `runs-on: self-hosted` trong `sync.yml`.
 - **Proxy có egress VN** - set repo secret `SCRAPE_PROXY_URL`
   (`https://user:pass@host:port`), `src/scrape.js` tự động route qua đó. Bỏ trống = đi thẳng.
+- **VPS VN chạy cron riêng**, `git push` thẳng lên repo, bỏ hẳn GitHub Actions cho việc cào.
+
+Chạy lại phép đo bất cứ lúc nào: Actions → **Diagnose Cloudflare block** → Run workflow.
 
 ## Khi vietlott.vn đổi giao diện
 
