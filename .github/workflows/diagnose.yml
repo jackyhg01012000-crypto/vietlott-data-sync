@@ -1,0 +1,20 @@
+name: Diagnose Cloudflare block
+
+# Manual only. Runs the fetch-strategy probe on a GitHub-hosted runner, which is the only
+# place the 403 reproduces - locally from a Vietnamese IP every strategy passes.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm ci
+
+      - run: npm run diagnose

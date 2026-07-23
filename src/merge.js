@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const MAX_ENTRIES = 300;
+const LATEST_MAX_ENTRIES = 300;
 
 function loadExisting(filePath) {
   if (!fs.existsSync(filePath)) return [];
@@ -19,14 +19,7 @@ function sortKey(result) {
   return `${result.date}#${String(result.drawId).padStart(10, '0')}`;
 }
 
-// Merges freshly scraped results into whatever is already on disk for this product,
-// de-duplicating by drawId, keeping only the most recent MAX_ENTRIES, and reporting
-// whether anything actually changed (so the caller can skip a no-op git commit).
-function mergeAndWrite(productKey, freshResults, dataDir) {
-  const productDir = path.join(dataDir, productKey);
-  const filePath = path.join(productDir, 'latest.json');
-
-  const existing = loadExisting(filePath);
+function writeMerged(productKey, filePath, existing, freshResults, maxEntries, forceWrite) {
   const byDrawId = new Map(existing.map((r) => [String(r.drawId), r]));
   let changed = false;
 
@@ -39,13 +32,12 @@ function mergeAndWrite(productKey, freshResults, dataDir) {
     }
   }
 
-  if (!changed) return { changed: false, total: existing.length };
+  if (!changed && !forceWrite) return { changed: false, total: existing.length };
 
-  const merged = [...byDrawId.values()]
-    .sort((a, b) => (sortKey(a) < sortKey(b) ? 1 : -1))
-    .slice(0, MAX_ENTRIES);
+  let merged = [...byDrawId.values()].sort((a, b) => (sortKey(a) < sortKey(b) ? 1 : -1));
+  if (maxEntries) merged = merged.slice(0, maxEntries);
 
-  fs.mkdirSync(productDir, { recursive: true });
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(
     filePath,
     JSON.stringify(
@@ -60,6 +52,36 @@ function mergeAndWrite(productKey, freshResults, dataDir) {
   );
 
   return { changed: true, total: merged.length };
+}
+
+// Merges freshly scraped results into two files for this product:
+//   - latest.json: capped at LATEST_MAX_ENTRIES, small and cheap to poll every ~15 min.
+//   - full.json: uncapped, the complete record since this repo started scraping. New app
+//     installs bulk-load this (alongside the older vietvudanh/vietlott-data mirror) so they
+//     don't end up missing whatever this repo has already collected.
+// De-duplicates by drawId. Returns whether anything changed (so the caller can skip a
+// no-op git commit).
+function mergeAndWrite(productKey, freshResults, dataDir) {
+  const productDir = path.join(dataDir, productKey);
+  const latestPath = path.join(productDir, 'latest.json');
+  const fullPath = path.join(productDir, 'full.json');
+
+  const existingLatest = loadExisting(latestPath);
+  const latestResult = writeMerged(productKey, latestPath, existingLatest, freshResults, LATEST_MAX_ENTRIES, false);
+
+  // First time full.json is written: seed it with whatever latest.json already has, so we
+  // don't throw away entries this repo already collected before full.json existed. Force the
+  // write even if the fresh scrape adds nothing new - otherwise the seed itself never lands
+  // on disk when nothing changed this run.
+  const fullAlreadyExists = fs.existsSync(fullPath);
+  const existingFull = fullAlreadyExists ? loadExisting(fullPath) : existingLatest;
+  const fullResult = writeMerged(productKey, fullPath, existingFull, freshResults, null, !fullAlreadyExists);
+
+  return {
+    changed: latestResult.changed || fullResult.changed,
+    total: latestResult.total,
+    fullTotal: fullResult.total,
+  };
 }
 
 module.exports = { mergeAndWrite };

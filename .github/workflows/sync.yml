@@ -2,7 +2,11 @@ name: Sync Vietlott results
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    # GitHub silently drops scheduled runs on shared runners when the queue is busy, and
+    # high-frequency crons on the hour are hit hardest - a '*/15' schedule here actually
+    # fired 13 times in 4 days. Twice an hour at odd minutes gets scheduled far more
+    # reliably. Draws are at most a few times a day, so this is plenty.
+    - cron: '7,37 * * * *'
   workflow_dispatch: {}
 
 permissions:
@@ -20,11 +24,15 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - run: npm ci
 
       - run: npm run scrape
+        env:
+          # Optional. Only set this repo secret if the runner's own IP is Cloudflare-blocked;
+          # an empty value means a direct connection.
+          SCRAPE_PROXY_URL: ${{ secrets.SCRAPE_PROXY_URL }}
 
       - name: Commit and push if data changed
         run: |

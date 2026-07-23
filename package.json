@@ -5,7 +5,8 @@
   "private": true,
   "main": "src/scrape.js",
   "scripts": {
-    "scrape": "node src/scrape.js"
+    "scrape": "node src/scrape.js",
+    "diagnose": "node src/diagnose.js"
   },
   "dependencies": {
     "axios": "^1.7.9",
