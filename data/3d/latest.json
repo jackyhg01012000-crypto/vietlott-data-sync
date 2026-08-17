@@ -1,7 +1,18 @@
 {
   "product": "3d",
-  "updatedAt": "2026-08-17T10:05:58.761Z",
+  "updatedAt": "2026-08-17T11:55:07.572Z",
   "results": [
+    {
+      "drawId": "01120",
+      "date": "2026-08-17",
+      "numbers": [
+        3,
+        2,
+        1
+      ],
+      "bonusNumber": null,
+      "jackpot": null
+    },
     {
       "drawId": "01119",
       "date": "2026-08-14",
