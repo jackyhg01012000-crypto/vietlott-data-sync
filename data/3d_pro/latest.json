@@ -1,7 +1,18 @@
 {
   "product": "3d_pro",
-  "updatedAt": "2026-07-23T08:29:02.729Z",
+  "updatedAt": "2026-08-17T10:05:59.766Z",
   "results": [
+    {
+      "drawId": "00766",
+      "date": "2026-08-15",
+      "numbers": [
+        5,
+        8,
+        0
+      ],
+      "bonusNumber": null,
+      "jackpot": null
+    },
     {
       "drawId": "00755",
       "date": "2026-07-21",

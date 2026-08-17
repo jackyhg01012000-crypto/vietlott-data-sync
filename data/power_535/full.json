@@ -1,7 +1,20 @@
 {
   "product": "power_535",
-  "updatedAt": "2026-07-23T08:28:55.954Z",
+  "updatedAt": "2026-08-17T10:05:57.684Z",
   "results": [
+    {
+      "drawId": "00829",
+      "date": "2026-08-17",
+      "numbers": [
+        7,
+        13,
+        19,
+        32,
+        33
+      ],
+      "bonusNumber": 11,
+      "jackpot": null
+    },
     {
       "drawId": "00779",
       "date": "2026-07-23",
