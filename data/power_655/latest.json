@@ -1,7 +1,21 @@
 {
   "product": "power_655",
-  "updatedAt": "2026-08-17T10:05:55.158Z",
+  "updatedAt": "2026-08-18T11:56:52.439Z",
   "results": [
+    {
+      "drawId": "01386",
+      "date": "2026-08-18",
+      "numbers": [
+        3,
+        15,
+        18,
+        38,
+        41,
+        48
+      ],
+      "bonusNumber": 30,
+      "jackpot": null
+    },
     {
       "drawId": "01385",
       "date": "2026-08-15",
