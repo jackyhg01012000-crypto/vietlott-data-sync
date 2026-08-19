@@ -1,7 +1,73 @@
 {
   "product": "bingo18",
-  "updatedAt": "2026-08-19T05:05:03.538Z",
+  "updatedAt": "2026-08-19T05:41:05.540Z",
   "results": [
+    {
+      "drawId": "0182289",
+      "date": "2026-08-19",
+      "numbers": [
+        1,
+        3,
+        3
+      ],
+      "bonusNumber": null,
+      "jackpot": null
+    },
+    {
+      "drawId": "0182288",
+      "date": "2026-08-19",
+      "numbers": [
+        6,
+        2,
+        1
+      ],
+      "bonusNumber": null,
+      "jackpot": null
+    },
+    {
+      "drawId": "0182287",
+      "date": "2026-08-19",
+      "numbers": [
+        1,
+        4,
+        4
+      ],
+      "bonusNumber": null,
+      "jackpot": null
+    },
+    {
+      "drawId": "0182286",
+      "date": "2026-08-19",
+      "numbers": [
+        6,
+        5,
+        2
+      ],
+      "bonusNumber": null,
+      "jackpot": null
+    },
+    {
+      "drawId": "0182285",
+      "date": "2026-08-19",
+      "numbers": [
+        2,
+        5,
+        3
+      ],
+      "bonusNumber": null,
+      "jackpot": null
+    },
+    {
+      "drawId": "0182284",
+      "date": "2026-08-19",
+      "numbers": [
+        5,
+        2,
+        6
+      ],
+      "bonusNumber": null,
+      "jackpot": null
+    },
     {
       "drawId": "0182282",
       "date": "2026-08-19",
